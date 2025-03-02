@@ -1,0 +1,65 @@
+<header class="w-full bg-blue-500 text-white p-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center">
+        <!-- Logo -->
+        <h1 class="text-2xl font-bold">
+            <a href="/" class="flex items-center space-x-2">
+                <i class="fas fa-cloud-sun"></i> <!-- Icon for WeatherApp -->
+                <span>TheCloudly</span>
+            </a>
+        </h1>
+
+        <!-- Navigation -->
+        <nav>
+            <ul class="flex space-x-6 items-center">
+                <!-- Home -->
+                <li>
+                    <a href="/" class="hover:underline flex items-center space-x-2">
+                        <i class="fas fa-home"></i> <!-- Home Icon -->
+                        <span>Home</span>
+                    </a>
+                </li>
+
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <!-- Account -->
+                    <li>
+                        <a href="/Account/Account" class="hover:underline flex items-center space-x-2">
+                            <i class="fas fa-user-circle"></i> <!-- Account Icon -->
+                            <span>Account</span>
+                        </a>
+                    </li>
+
+                    <!-- Logout -->
+                    <li>
+                        <form method="post" asp-page="/Account/Logout" class="inline">
+                            <button 
+                                type="submit" 
+                                class="hover:underline flex items-center space-x-2 bg-transparent text-white border-none cursor-pointer">
+                                <i class="fas fa-sign-out-alt"></i> <!-- Logout Icon -->
+                                <span>Logout</span>
+                            </button>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    <!-- Login -->
+                    <li>
+                        <a href="/Account/Login" class="hover:underline flex items-center space-x-2">
+                            <i class="fas fa-sign-in-alt"></i> <!-- Login Icon -->
+                            <span>Login</span>
+                        </a>
+                    </li>
+
+                    <!-- Create Account -->
+                    <li>
+                        <a href="/Account/Register" class="hover:underline flex items-center space-x-2">
+                            <i class="fas fa-user-plus"></i> <!-- Register Icon -->
+                            <span>Create Account</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</header>

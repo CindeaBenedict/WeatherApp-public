@@ -1,0 +1,1 @@
+web: cd bin/publish && ./WeatherApp --urls http://*:$PORT

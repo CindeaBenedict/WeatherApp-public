@@ -1,0 +1,21 @@
+{
+  "name": "weatherapp",
+  "version": "1.0.0",
+  "engines": {
+    "node": "23.x"
+  },
+  "scripts": {
+    "heroku-prebuild": "npm cache clean --force",
+    "build": "echo 'Skipping build step as CSS should be pre-built'",
+    "heroku-postbuild": "echo 'Skipping Tailwind build on Heroku'"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.3.0",
+    "postcss": "^8.4.20",
+    "autoprefixer": "^10.4.13"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

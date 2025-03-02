@@ -1,0 +1,134 @@
+@page
+@model WeatherApp.Pages.Account.LoginModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - WeatherApp</title>
+    <link rel="stylesheet" href="/css/output.css">
+
+    <style>
+        /* Error message styling */
+        .error-message {
+            color: red;
+            font-size: 0.875rem;
+            margin-top: 5px;
+        }
+    </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const EmailInput = document.getElementById("Email");
+            const passwordInput = document.getElementById("password");
+            const loginForm = document.getElementById("login-form");
+            const errorMessage = document.getElementById("login-error");
+            const togglePasswordBtn = document.getElementById("toggle-password");
+
+            // Toggle password visibility
+            togglePasswordBtn.addEventListener("click", () => {
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    togglePasswordBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                } else {
+                    passwordInput.type = "password";
+                    togglePasswordBtn.innerHTML = '<i class="fas fa-eye"></i>';
+                }
+            });
+
+            // Check for error parameter in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('error') === 'invalid_credentials') {
+                errorMessage.textContent = "Invalid email or password. Please try again.";
+                errorMessage.style.display = "block";
+            }
+
+            // Form validation before submission
+            loginForm.addEventListener("submit", (event) => {
+                let isValid = true;
+                errorMessage.style.display = "none";
+
+                // Basic validation
+                if (!EmailInput.value.trim()) {
+                    isValid = false;
+                    errorMessage.textContent = "Please enter your email address.";
+                    errorMessage.style.display = "block";
+                } else if (!passwordInput.value.trim()) {
+                    isValid = false;
+                    errorMessage.textContent = "Please enter your password.";
+                    errorMessage.style.display = "block";
+                }
+
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <!-- Header -->
+    @await Html.PartialAsync("_Header")
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12">
+        <div class="w-full max-w-lg mx-auto bg-white shadow-lg rounded-lg p-6">
+            <h1 class="text-2xl font-bold text-blue-600 mb-6 text-center">Login to WeatherApp</h1>
+            
+            <!-- Display model validation errors from backend -->
+            @if (!ModelState.IsValid)
+            {
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+                    <p class="font-bold">Login failed</p>
+                    <p>Please check your email and password and try again.</p>
+                </div>
+            }
+            
+            <form id="login-form" method="post" class="space-y-4">
+                <!-- Email/Email -->
+                <div>
+                    <label asp-for="Input.Email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input asp-for="Input.Email" id="Email" class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500" />
+                    <span asp-validation-for="Input.Email" class="error-message"></span>
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label asp-for="Input.Password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <div class="relative">
+                        <input asp-for="Input.Password" type="password" id="password" class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500" />
+                        <button type="button" id="toggle-password" class="absolute right-3 top-3 text-gray-500">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Input.Password" class="error-message"></span>
+                </div>
+
+                <!-- Error message display -->
+                <p id="login-error" class="error-message text-center"></p>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input asp-for="Input.RememberMe" type="checkbox" class="mr-2" />
+                        <label asp-for="Input.RememberMe" class="text-sm text-gray-700">Remember Me</label>
+                    </div>
+                    
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Login</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    @await Html.PartialAsync("_Footer")
+</body>
+</html>

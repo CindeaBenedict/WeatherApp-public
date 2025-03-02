@@ -1,0 +1,194 @@
+@page
+@model WeatherApp.Pages.Account.RegisterModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - WeatherApp</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/output.css">
+    <style>
+        .error-popup {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: red;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+
+        .strength-weak { color: #dc2626; }
+        .strength-fair { color: #f59e0b; }
+        .strength-good { color: #65a30d; }
+        .strength-strong { color: #16a34a; }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <div>
+        @await Html.PartialAsync("_Header")
+    </div>
+
+    <div id="error-popup" class="error-popup"></div>
+
+    <main class="container mx-auto px-4 py-12">
+        <div class="w-full max-w-lg mx-auto bg-white shadow-lg rounded-lg p-6">
+            <h1 class="text-2xl font-bold text-green-600 mb-6 text-center">Create an Account</h1>
+            <form id="register-form" method="post" class="space-y-4">
+                @Html.AntiForgeryToken()
+
+                <div>
+                    <label for="Input_Username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <input id="Input_Username" name="Input.Username" class="w-full px-4 py-2 border rounded-md" required />
+                    <span id="username-error" class="text-red-500 text-sm"></span>
+                    <span asp-validation-for="Input.Username" class="text-red-500 text-sm"></span>
+                </div>
+
+                <div>
+                    <label for="Input_Email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="Input_Email" name="Input.Email" class="w-full px-4 py-2 border rounded-md" required />
+                    <span id="email-error" class="text-red-500 text-sm"></span>
+                    <span asp-validation-for="Input.Email" class="text-red-500 text-sm"></span>
+                </div>
+
+                <div>
+                    <label for="Input_Password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="Input_Password" name="Input.Password" class="w-full px-4 py-2 border rounded-md" required />
+                    <span id="password-error" class="text-red-500 text-sm"></span>
+                    <span asp-validation-for="Input.Password" class="text-red-500 text-sm"></span>
+                </div>
+
+                <div>
+                    <label for="Input_ConfirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                    <input type="password" id="Input_ConfirmPassword" name="Input.ConfirmPassword" class="w-full px-4 py-2 border rounded-md" required />
+                    <span id="confirm-password-error" class="text-red-500 text-sm"></span>
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-red-500 text-sm"></span>
+                </div>
+
+                <button type="submit" class="w-full py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Create Account</button>
+            </form>
+        </div>
+    </main>
+
+    <div>
+        @await Html.PartialAsync("_Footer")
+    </div>
+
+    <script>
+    // JavaScript isolation using Immediately Invoked Function Expression (IIFE)
+    (function() {
+        'use strict';
+
+        const emailInput = document.getElementById("Input_Email");
+        const usernameInput = document.getElementById("Input_Username");
+        const passwordInput = document.getElementById("Input_Password");
+        const confirmPasswordInput = document.getElementById("Input_ConfirmPassword");
+        const registerForm = document.getElementById("register-form");
+        const errorPopup = document.getElementById("error-popup");
+
+        // Validation functions
+        function isValidUsername(username) {
+            if (!username || username.length < 3 || username.length > 20) return false;
+            const validChars = /^[a-zA-Z0-9_-]+$/;
+            return validChars.test(username);
+        }
+
+        function isValidEmail(email) {
+            try {
+                if (!email) return false;
+                const parts = email.split('@@'); // Escape Razor parsing
+                if (parts.length !== 2) return false;
+                const domainParts = parts[1].split('.');
+                return domainParts.length >= 2 && domainParts[1].length >= 2;
+            } catch {
+                return false;
+            }
+        }
+
+        function validatePassword(password) {
+            const requirements = [];
+            if (password.length < 8) requirements.push("at least 8 characters");
+            if (!/[A-Z]/.test(password)) requirements.push("one uppercase letter");
+            if (!/[a-z]/.test(password)) requirements.push("one lowercase letter");
+            if (!/[0-9]/.test(password)) requirements.push("one number");
+            if (!/[^A-Za-z0-9]/.test(password)) requirements.push("one special character");
+            return requirements;
+        }
+
+        // Modified form handler
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const errors = [];
+            
+            // Clear previous errors
+            document.querySelectorAll('[id$="-error"]').forEach(el => el.textContent = '');
+
+            // Client-side validation
+            if (!isValidUsername(usernameInput.value.trim())) {
+                errors.push("Invalid username");
+                document.getElementById("username-error").textContent = 
+                    usernameInput.value.trim().length < 3 ? "Username must be at least 3 characters" :
+                    usernameInput.value.trim().length > 20 ? "Username must be less than 20 characters" :
+                    "Username can only contain letters, numbers, underscores and hyphens";
+            }
+
+            if (!isValidEmail(emailInput.value.trim())) {
+                errors.push("Invalid email format");
+                document.getElementById("email-error").textContent = "Invalid email format";
+            }
+
+            const passwordErrors = validatePassword(passwordInput.value);
+            if (passwordErrors.length) {
+                errors.push("Weak password");
+                document.getElementById("password-error").textContent = 
+                    `Password needs: ${passwordErrors.join(", ")}`;
+            }
+
+            if (passwordInput.value !== confirmPasswordInput.value) {
+                errors.push("Passwords don't match");
+                document.getElementById("confirm-password-error").textContent = 
+                    "Passwords do not match";
+            }
+
+            if (errors.length) {
+                errorPopup.textContent = errors.join(". ");
+                errorPopup.style.display = "block";
+                setTimeout(() => errorPopup.style.display = "none", 3000);
+                return;
+            }
+
+            // Submit form normally - server will handle email existence check
+            registerForm.submit();
+        }
+
+        // Event listeners
+        usernameInput.addEventListener("input", function() {
+            document.getElementById("username-error").textContent = "";
+        });
+
+        emailInput.addEventListener("input", function() {
+            document.getElementById("email-error").textContent = "";
+        });
+
+        passwordInput.addEventListener("input", function() {
+            document.getElementById("password-error").textContent = "";
+        });
+
+        confirmPasswordInput.addEventListener("input", function() {
+            document.getElementById("confirm-password-error").textContent = "";
+        });
+
+        registerForm.addEventListener("submit", handleFormSubmit);
+    })();
+</script>
+</body>
+</html>

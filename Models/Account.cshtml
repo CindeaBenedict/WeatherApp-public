@@ -1,0 +1,27 @@
+@page
+@model WeatherApp.Pages.Account.AccountModel
+@{
+    ViewData["Title"] = "Your Account";
+}
+
+<div class="flex justify-center items-center min-h-screen bg-gray-100">
+  <div class="w-full max-w-lg bg-white rounded-lg shadow-md p-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Welcome, @Model.UserName</h2>
+    <div class="space-y-4">
+      <p class="text-gray-700">Email: <strong>@Model.Email</strong></p>
+      <p class="text-gray-700">Preferred Language: <strong>@Model.PreferredLanguage</strong></p>
+      <p class="text-gray-700">Favorite Locations:</p>
+      <ul class="list-disc ml-6 text-gray-700">
+        @foreach (var location in Model.FavoriteLocations)
+        {
+          <li>@location.LocationName</li>
+        }
+      </ul>
+    </div>
+    <form method="post" asp-page-handler="Logout">
+      <button type="submit" class="block mt-6 w-full py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+        Logout
+      </button>
+    </form>
+  </div>
+</div>
